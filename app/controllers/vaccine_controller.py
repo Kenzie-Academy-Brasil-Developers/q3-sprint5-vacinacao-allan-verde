@@ -1,11 +1,12 @@
+from datetime import datetime, timedelta
+from http import HTTPStatus
+
 from app.configs.database import db
 from app.models.exc_model import CPFError, KeyDataError, TypeDataError
 from app.models.vaccine_model import VaccineCards
-from app.services.vaccine_service import serialize
+from app.services.vaccine_service import normalize, serialize
 
-from datetime import datetime, timedelta
-from flask import jsonify, request
-from http import HTTPStatus
+from flask import request
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
 
@@ -14,6 +15,7 @@ def create_vaccine():
     try:
         data = request.get_json()
         VaccineCards.type_value_and_keys_is_valids(data)
+        normalize(data)
         
         data["first_shot_date"] = datetime.now()
         data["second_shot_date"] = data["first_shot_date"] + timedelta(days=90)
