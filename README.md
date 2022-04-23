@@ -1,14 +1,74 @@
-# Vacinação
+<h1 align="center">
+  API - Vacinação
+</h1>
 
+<p align = "center">
+Este é o backend da aplicação Autenticação e Autorização - O objetivo dessa aplicação é que o usuário consiga se cadastrar, fazer login, alterar dados e deletar dados com algumas rotas privada.
+</p>
 
-| Critérios | Pts. |
-|---|---|
-| Utilizar **SQLAlchemy**, **Dataclass**, **Blueprint**, **Migrations** e **Padrão Flask Factory** corretamente. | 1 |
-| [POST] **/vaccinations**. Ao fazer requisição nessa rota passando os dados corretos deve retornar o status code **201** (**CREATED**) e fazer a inserção dos dados normalizados no banco de dados. | 1 |
-| [POST] **/vaccination**. Ao fazer requisição nessa rota passando uma **string** com mais de 11 characters para a chave 'cpf', deve retornar o status code **400** (**BAD REQUEST**) com uma mensagem de erro que faça sentido. | 1 |
-| [POST] **/vaccination**. Ao fazer a requisição nessa rota com o valor de qualquer uma das chaves sendo diferente de **string**, deve retornar o status code **400** (**BAD REQUEST**)) com uma mensagem de erro que faça sentido. | 1.25 |
-| [POST] **/vaccination**. Ao fazer a requisição nessa rota faltando qualquer uma das chaves (**cpf**, **name**, **health_unit_name** e **vaccine_name**), deve retornar o status code **400** (**BAD REQUEST**) com uma mensagem de erro que faça sentido. | 1.25 |
-| [POST] **/vaccination**. Ao fazer a requisição nessa rota passando um **CPF** que já exista no banco de dados, deve retornar o status code **409** (**CONFLICT**) com uma mensagem de erro que faça sentido. | 1.25 |
-| [POST] **/vaccinations**. Ao fazer requisição nessa rota passando uma chave a mais, deve retornar o status code **201** (**CREATED**) e fazer a criação corretamente ignorando a chave passada. | 1.25 |
-| [GET] **/vaccinations**. Deve retornar todas as vacinas registradas no banco de dados, status code **200** (**OK**) | 1 |
-| Arquivos **requirements.txt**, **.env**, **.env.example**, **.gitignore** (**venv** e .**env**) | 1 |
+[Link da api](https://vacinacao-allan.herokuapp.com)
+
+### Criação de vacina
+`POST /vaccinations - FORMATO DA REQUISIÇÃO`
+```json
+{
+  "cpf": "12312312300",
+  "name": "    kenZiNHO   jUniOR ",
+  "vaccine_name": "  pFIZER ",
+  "health_unit_name": "  SAnTa     rItA   "
+}
+```
+#### Caso dê tudo certo, a resposta será assim:
+`POST /vaccinations - FORMATO DA RESPOSTA - STATUS 201`
+```json
+{
+  "cpf": "12312312300",
+  "first_shot_date": "Sat, 20 Apr 2022 00:00:00 GMT",
+  "health_unit_name": "Santa Rita",
+  "name": "Kenzinho Junior",
+  "second_shot_date": "Fri, 22 Jul 2022 00:00:00 GMT",
+  "vaccine_name": "Pfizer"
+}
+```
+#### Possíveis erros:
+##### CPF já cadastrado.
+`POST /vaccinations - FORMATO DA RESPOSTA - STATUS 400`
+```json
+{
+  "error": "CPF já cadastrado"
+}
+```
+##### Formato do CPF inválido.
+`POST /vaccinations - FORMATO DA RESPOSTA - STATUS 400`
+```json
+{
+  "error": "O CPF deve possuir 11 caracteres numéricos"
+}
+```
+##### Chave a mais, a menos ou incorreta.
+`POST /vaccinations - FORMATO DA RESPOSTA - STATUS 400`
+```json
+{
+  "error": {
+    "expected": [
+      "health_unit_name",
+      "name",
+      "vaccine_name",
+      "cpf"
+    ],
+    "received": [
+      "cpsf",
+      "name",
+      "vaccine_name",
+      "health_unit_name"
+    ]
+  }
+}
+```
+##### Tipo de dado diferente de string.
+`POST /vaccinations - FORMATO DA RESPOSTA - STATUS 400`
+```json
+{
+  "error": "chave <exemplo> possui tipo diferente de string"
+}
+```
